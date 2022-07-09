@@ -196,12 +196,18 @@ $(".card .list-group").sortable({
   tolerance: "pointer",
   helper: "clone",
   activate: function(event) {
+    $(this).addClass("dropover");
+    $(".bottom-trash").addClass("bottom-trash-drag");
   },
   deactivate: function(event) {
+    $(this).removeClass("dropover");
+    $(".bottom-trash").removeClass("bottom-trash-drag");
   },
   over: function(event) {
+    $(event.target).addClass("dropover-active");
   },
   out: function(event) {
+    $(event.target).removeClass("dropover-active");
   },
   update: function(event) {
     var tempArr = [];
@@ -236,14 +242,13 @@ $("#trash").droppable({
   accept: ".card .list-group-item",
   tolerance: "touch",
   drop: function(event, ui) {
-    console.log("drop");
     ui.draggable.remove();
   },
   over: function(event, ui) {
-    console.log("over");
+    $(".bottom-trash").addClass("bottom-trash-active");
   },
   out: function(event, ui) {
-    console.log("out");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
 });
 
@@ -257,13 +262,10 @@ var auditTask = function(taskEl) {
     .find("span")
     .text()
     .trim();
-  // ensure that it worked
-  console.log(date)
 
   // convert to moment object at 5:00pm
   var time = moment(date, "L")
     .set("hour", 17);
-  console.log(time);
 
   // remove any old classes from the element
   $(taskEl).removeClass("list-group-time-warning list-group-item-danger");
@@ -276,6 +278,13 @@ var auditTask = function(taskEl) {
     $(taskEl).addClass("list-group-item-warning");
   }
 };
+
+setInterval(function() {
+  $(".card .list-group-item")
+    .each(function(index, el) {
+      auditTask(el);
+    });
+}, 1800000);
 
 // load tasks for the first time
 loadTasks();
